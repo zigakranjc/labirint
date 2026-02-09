@@ -1,0 +1,17 @@
+*{
+    margin: 0;
+    padding: auto;
+}
+
+.labirint{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+h1{
+    text-align: center;
+}
+canvas{
+    background-color: aqua;
+}
