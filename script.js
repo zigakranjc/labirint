@@ -36,10 +36,6 @@ function drawImage(){
     }
     setInterval(drawIt, 100);*/
 
-        let index = 0; // začetna točka
-    let t = 0;     // interpolacija med točkami
-    const speed = 0.02;
-
     const path = [
         [234,2],[234,10],[154,10],[154,26],[138,26],[138,42],[154,42],
         [154,58],[138,58],[138,90],[202,90],[202,106],[154,106],
@@ -75,42 +71,75 @@ function drawImage(){
         [298,426],[282,426],[282,442],[266,442],[266,458],[250,458],
         [250,482]
     ];
-    
+
+    let img1 = new Image(); img1.src = "img/shark.png";
+    let img2 = new Image(); img2.src = "img/fish.png";
+    let kvadratek1 = { index: 0, t: 0, speed: 0.05, delay: 100, img: img1, size: 20};
+    let kvadratek2 = { index: 0, t: 0, speed: 0.04, delay: 0, img: img2, size: 20, stopped: false};
 
     function animate() {
-        // pobriši canvas
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-    
-        // nariši labirint
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawImage();
-    
-        if (index < path.length - 1) {
-            const [x1, y1] = path[index];
-            const [x2, y2] = path[index + 1];
-    
-            // linearna interpolacija
-            const x = x1 + (x2 - x1) * t;
-            const y = y1 + (y2 - y1) * t;
-    
-            // nariši kvadratek
-            ctx.fillStyle = "red";
-            ctx.fillRect(x-5, y-5, 10, 10);
-    
-            // premik po segmentu
-            t += speed;
-            if (t >= 1) {
-                t = 0;
-                index++; // gremo na naslednji segment
+
+        // 1. Izračun trenutnih koordinat za oba (potrebujemo jih za preverjanje dotika)
+        const pos1 = getPos(kvadratek1);
+        const pos2 = getPos(kvadratek2);
+
+        // 2. Preverjanje razdalje (če oba že obstajata na platnu)
+        if (kvadratek1.delay === 0 && kvadratek2.delay === 0) {
+            let dx = pos1.x - pos2.x;
+            let dy = pos1.y - pos2.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Če je razdalja manjša od npr. 20 pikslov, ustavi prvega
+            if (distance < 10) {
+                kvadratek2.stopped = true;
             }
-    
-            requestAnimationFrame(animate);
-        } else {
-            // zadnja točka
-            const [x, y] = path[path.length-1];
-            ctx.fillStyle = "red";
-            ctx.fillRect(x-5, y-5, 10, 10);
+        }
+
+        updateAndDraw(kvadratek1);
+        updateAndDraw(kvadratek2);
+
+        requestAnimationFrame(animate);
+    }
+
+// Pomožna funkcija, ki samo vrne trenutni X in Y brez premikanja
+function getPos(obj) {
+    if (obj.index >= path.length - 1) {
+        return { x: path[path.length - 1][0], y: path[path.length - 1][1] };
+    }
+    const [x1, y1] = path[obj.index];
+    const [x2, y2] = path[obj.index + 1];
+    return {
+        x: x1 + (x2 - x1) * obj.t,
+        y: y1 + (y2 - y1) * obj.t
+    };
+}
+
+
+// Pomožna funkcija, ki poskrbi za premikanje in risanje posameznega objekta
+function updateAndDraw(kvadratek) {
+    // 1. Preverjanje zamika
+    if (kvadratek.delay > 0) {
+        kvadratek.delay--;
+        return;
+    }
+
+    // 2. Pridobivanje pozicije
+    const pos = getPos(kvadratek);
+
+    // 3. Risanje slike (vedno narišemo na trenutni poziciji)
+    ctx.drawImage(kvadratek.img, pos.x - kvadratek.size / 2, pos.y - kvadratek.size / 2, kvadratek.size, kvadratek.size);
+
+    // 4. LOGIKA PREMIKANJA (posodobi se samo, če NI ustavljen in NI na koncu)
+    if (!kvadratek.stopped && kvadratek.index < path.length - 1) {
+        kvadratek.t += kvadratek.speed;
+        if (kvadratek.t >= 1) {
+            kvadratek.t = 0;
+            kvadratek.index++;
         }
     }
+}
 
 
 
