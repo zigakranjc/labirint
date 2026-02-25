@@ -1,16 +1,11 @@
 
-let svgBackground = new Image ();
+var svgBackground = new Image ();
 
 window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
 
     svgBackground.src = "img/labirint.svg";
-
-    
-    svgBackground.onload = () => {
-        setInterval(drawImage, 1000 /30);
-    };
 
     animate (); 
 
@@ -72,36 +67,82 @@ function drawImage(){
         [250,482]
     ];
 
-    let img1 = new Image(); img1.src = "img/shark.png";
-    let img2 = new Image(); img2.src = "img/fish.png";
-    let kvadratek1 = { index: 0, t: 0, speed: 0.05, delay: 100, img: img1, size: 20};
-    let kvadratek2 = { index: 0, t: 0, speed: 0.04, delay: 0, img: img2, size: 20, stopped: false};
+    var img1 = new Image(); img1.src = "img/shark.png";
+    var img2 = new Image(); img2.src = "img/fish.png";
+    var img3 = new Image(); img3.src = "img/fish.png";
+    var kvadratek1 = { index: 0, t: 0, speed: 0.06, delay: 100, img: img1, size: 20};
+    var kvadratek2 = { index: 0, t: 0, speed: 0.04, delay: 0, img: img2, size: 20, stopped: false};
+    var kvadratek3 = { index: 0, t: 0, speed: 0.05, delay: 0, img: img3, size: 20, stopped: false};
 
-    function animate() {
+    var endImg = new Image();
+    endImg.src = "img/shark.png"; // Pot do tvoje slike za konec
+    var gameOver = false;
+    var showEndImageUntil = 0;
+
+function animate() {
+    // 1. Če je igre konec, nariši sliko in ČAKAJ (brez novega requestAnimationFrame tukaj)
+    if (gameOver) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawImage();
-
-        // 1. Izračun trenutnih koordinat za oba (potrebujemo jih za preverjanje dotika)
-        const pos1 = getPos(kvadratek1);
-        const pos2 = getPos(kvadratek2);
-
-        // 2. Preverjanje razdalje (če oba že obstajata na platnu)
-        if (kvadratek1.delay === 0 && kvadratek2.delay === 0) {
-            let dx = pos1.x - pos2.x;
-            let dy = pos1.y - pos2.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-
-            // Če je razdalja manjša od npr. 20 pikslov, ustavi prvega
-            if (distance < 10) {
-                kvadratek2.stopped = true;
-            }
-        }
-
-        updateAndDraw(kvadratek1);
-        updateAndDraw(kvadratek2);
-
+        drawImage(); // Nariši labirint
+        ctx.drawImage(endImg, 0, 0, canvas.width, canvas.height); // Nariši shark sliko čez
         requestAnimationFrame(animate);
+        return; // Tukaj se zanka popolnoma ustavi
     }
+
+    // 2. Normalno risanje
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawImage();
+
+    const pos1 = getPos(kvadratek1);
+    const pos2 = getPos(kvadratek2);
+    const pos3 = getPos(kvadratek3);
+
+    // 3. Preverjanje trka za kvadratek 2
+    if (kvadratek1.delay === 0 && kvadratek2.delay === 0) {
+        let dist = Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
+        if (dist < 10) {
+            gameOver = true;
+            // Takoj narišemo zadnji "frame" s sliko, preden se zanka ustavi
+            ctx.drawImage(endImg, 0, 0, canvas.width, canvas.height);
+
+            setTimeout(() => {
+                gameOver = false;
+                kvadratek1.t += 0.1; // Skok naprej, da se ne zaletita spet
+                kvadratek2.t += 0.1;
+                kvadratek2.stopped = false;
+                animate(); // PONOVNI ZAGON zanke po 3 sekundah
+            }, 3000);
+            requestAnimationFrame(animate);
+            return;
+        }
+    }
+
+    // 4. Preverjanje trka za kvadratek 3
+    if (kvadratek1.delay === 0 && kvadratek3.delay === 0) {
+        let dist = Math.sqrt((pos1.x - pos3.x)**2 + (pos1.y - pos3.y)**2);
+        if (dist < 10) {
+            gameOver = true;
+            ctx.drawImage(endImg, 0, 0, canvas.width, canvas.height);
+
+            setTimeout(() => {
+                gameOver = false;
+                kvadratek1.t += 0.1;
+                kvadratek3.t += 0.1;
+                kvadratek3.stopped = false;
+                animate(); 
+            }, 3000);
+            requestAnimationFrame(animate);
+            return;
+        }
+    }
+
+    // 5. Posodabljanje in risanje, če ni trka
+    updateAndDraw(kvadratek1);
+    updateAndDraw(kvadratek2);
+    updateAndDraw(kvadratek3);
+
+    requestAnimationFrame(animate);
+}
 
 // Pomožna funkcija, ki samo vrne trenutni X in Y brez premikanja
 function getPos(obj) {
@@ -140,6 +181,7 @@ function updateAndDraw(kvadratek) {
         }
     }
 }
+
 
 
 
