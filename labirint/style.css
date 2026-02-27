@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: auto;
+}
+.labirint{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+h1{
+    text-align: center;
+}
+canvas{
+    background-image: url(img/jungle.webp);
+}
+body{
+    background-image: url(img/zoo-animals.webp);
+    background-repeat: no-repeat;
+    background-size: 40vw;
+    background-position: 50%;
+}
