@@ -12,5 +12,11 @@ h1{
     text-align: center;
 }
 canvas{
-    background-color: aqua;
+    background-image: url(img/jungle.webp);
 }
+/*body{
+    background-image: url(img/zoo-animals.webp);
+    background-repeat: no-repeat;
+    background-size: 40vw;
+    background-position: 50%;
+}*/
