@@ -7,6 +7,8 @@ window.onload = function () {
 
     svgBackground.src = "img/labirint.svg";
 
+    wireButtons();
+
     animate (); 
 
 }
@@ -72,14 +74,63 @@ function drawImage(){
     var img2 = new Image(); img2.src = "img/giraffe.png";
     var img3 = new Image(); img3.src = "img/zebra.png";
     var img4 = new Image(); img4.src = "img/antelope.png";
-    var kvadratek1 = { index: 0, t: 0, speed: 0.06, delay: 100, img: img1, size: 20};
-    var kvadratek2 = { index: 0, t: 0, speed: 0.03, delay: 0, img: img2, size: 20, stopped: false, lastX: 0, lastY: 0};
-    var kvadratek3 = { index: 0, t: 0, speed: 0.04, delay: 0, img: img3, size: 20, stopped: false, lastX: 0, lastY: 0};
-    var kvadratek4 = { index: 0, t: 0, speed: 0.05, delay: 0, img: img4, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek1 = { index: 0, t: 0, speed: 0.105, delay: 200, img: img1, size: 20};
+    var kvadratek2 = { index: 0, t: 0, speed: 0.08, delay: 0, img: img2, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek3 = { index: 0, t: 0, speed: 0.09, delay: 0, img: img3, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek4 = { index: 0, t: 0, speed: 0.099, delay: 0, img: img4, size: 20, stopped: false, lastX: 0, lastY: 0};
 
     var endImg = new Image();
     endImg.src = "img/lion.png"; // Pot do tvoje slike za konec
     var showEndImageUntil = 0;
+
+function resetGame() {
+    kvadratek1.index = 0;
+    kvadratek1.t = 0;
+    kvadratek1.delay = 200;
+
+    kvadratek2.index = 0;
+    kvadratek2.t = 0;
+    kvadratek2.delay = 0;
+    kvadratek2.stopped = false;
+    kvadratek2.lastX = 0;
+    kvadratek2.lastY = 0;
+
+    kvadratek3.index = 0;
+    kvadratek3.t = 0;
+    kvadratek3.delay = 0;
+    kvadratek3.stopped = false;
+    kvadratek3.lastX = 0;
+    kvadratek3.lastY = 0;
+
+    kvadratek4.index = 0;
+    kvadratek4.t = 0;
+    kvadratek4.delay = 0;
+    kvadratek4.stopped = false;
+    kvadratek4.lastX = 0;
+    kvadratek4.lastY = 0;
+
+    showEndImageUntil = 0;
+}
+
+function wireButtons() {
+    var restartButton = document.getElementById("restartButton");
+    if (restartButton) {
+        restartButton.addEventListener("click", resetGame);
+    }
+
+    var aboutButton = document.getElementById("aboutButton");
+    if (aboutButton) {
+        aboutButton.addEventListener("click", function () {
+            if (window.Swal && typeof window.Swal.fire === "function") {
+                window.Swal.fire({
+                    icon: "info",
+                    title: "Author",
+                    text: "Žiga Kranjc, 4. Rb"
+                });
+            }
+        });
+    }
+}
 
 function animate() {
     // 1. Če je igre konec, nariši sliko in ČAKAJ (brez novega requestAnimationFrame tukaj)

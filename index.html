@@ -7,9 +7,15 @@
     <h1>LABIRINT</h1>
 
     <div class="labirint">
-        <canvas id="canvas" width="485" height="485"></canvas>
+        <div class="maze-wrapper">
+            <canvas id="canvas" width="485" height="485"></canvas>
+            <div class="controls">
+                <button id="restartButton" type="button">Restart</button>
+                <button id="aboutButton" type="button">About</button>
+            </div>
+        </div>
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>
 </body>
 </html>
