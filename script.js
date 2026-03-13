@@ -1,11 +1,12 @@
 
 var svgBackground = new Image ();
+const BASE_SIZE = 485;
 
 window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
 
-    svgBackground.src = "img/labirint.svg";
+    svgBackground.src = "img/labirint.svg"; 
 
     wireButtons();
 
@@ -15,7 +16,9 @@ window.onload = function () {
 
 function drawImage(){
     ctx.strokeStyle = "white";
-    ctx.drawImage(svgBackground, 0, 0, canvas.width, canvas.height);
+    const scale = getScale();
+    const offset = getOffset(scale);
+    ctx.drawImage(svgBackground, offset.x, offset.y, BASE_SIZE * scale, BASE_SIZE * scale);
 }
   /*  var x = 234;
     var y = 2;
@@ -154,11 +157,13 @@ function animate() {
     const pos2 = getPos(kvadratek2);
     const pos3 = getPos(kvadratek3);
     const pos4 = getPos(kvadratek4);
+    const scale = getScale();
+    const hitRadius = 10 * scale;
 
     // 3. Preverjanje trka za kvadratek 2
     if (!kvadratek2.stopped && kvadratek1.delay === 0 && kvadratek2.delay === 0) {
         let dist = Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
-        if (dist < 10) {
+        if (dist < hitRadius) {
             showEndImageUntil = Date.now() + 1500;            
                 kvadratek2.stopped = true;   // riba se ustavi
                 kvadratek2.lastX = pos2.x; // Shrani lokacijo ulova
@@ -173,7 +178,7 @@ function animate() {
     // 4. Preverjanje trka za kvadratek 3
     if (!kvadratek3.stopped && kvadratek1.delay === 0 && kvadratek3.delay === 0) {
         let dist = Math.sqrt((pos1.x - pos3.x)**2 + (pos1.y - pos3.y)**2);
-        if (dist < 10) {
+        if (dist < hitRadius) {
             showEndImageUntil = Date.now() + 1500;            
                 kvadratek3.stopped = true;   // riba se ustavi
                 kvadratek3.delay = Infinity; // nikoli več se ne aktivira
@@ -186,7 +191,7 @@ function animate() {
 
     if (!kvadratek4.stopped && kvadratek1.delay === 0 && kvadratek4.delay === 0) {
         let dist = Math.sqrt((pos1.x - pos4.x)**2 + (pos1.y - pos4.y)**2);
-        if (dist < 10) {
+        if (dist < hitRadius) {
             showEndImageUntil = Date.now() + 1500;            
                 kvadratek4.stopped = true;   // riba se ustavi
                 kvadratek4.delay = Infinity;
@@ -210,21 +215,30 @@ function animate() {
 // Pomožna funkcija, ki samo vrne trenutni X in Y brez premikanja
 function getPos(obj) {
     if (obj.index >= path.length - 1) {
-        return { x: path[path.length - 1][0], y: path[path.length - 1][1] };
+        const scale = getScale();
+        const offset = getOffset(scale);
+        return {
+            x: offset.x + path[path.length - 1][0] * scale,
+            y: offset.y + path[path.length - 1][1] * scale
+        };
     }
     const [x1, y1] = path[obj.index];
     const [x2, y2] = path[obj.index + 1];
+    const scale = getScale();
+    const offset = getOffset(scale);
     return {
-        x: x1 + (x2 - x1) * obj.t,
-        y: y1 + (y2 - y1) * obj.t
+        x: offset.x + (x1 + (x2 - x1) * obj.t) * scale,
+        y: offset.y + (y1 + (y2 - y1) * obj.t) * scale
     };
 }
 
 
 // Pomožna funkcija, ki poskrbi za premikanje in risanje posameznega objekta
 function updateAndDraw(kvadratek) {
+    const scale = getScale();
+    const drawSize = kvadratek.size * scale;
     if (kvadratek.stopped) {
-        ctx.drawImage(kvadratek.img, kvadratek.lastX - kvadratek.size / 2, kvadratek.lastY - kvadratek.size / 2, kvadratek.size, kvadratek.size);
+        ctx.drawImage(kvadratek.img, kvadratek.lastX - drawSize / 2, kvadratek.lastY - drawSize / 2, drawSize, drawSize);
         return;
     }
     // 1. Preverjanje zamika
@@ -237,7 +251,7 @@ function updateAndDraw(kvadratek) {
     const pos = getPos(kvadratek);
 
     // 3. Risanje slike (vedno narišemo na trenutni poziciji)
-    ctx.drawImage(kvadratek.img, pos.x - kvadratek.size / 2, pos.y - kvadratek.size / 2, kvadratek.size, kvadratek.size);
+    ctx.drawImage(kvadratek.img, pos.x - drawSize / 2, pos.y - drawSize / 2, drawSize, drawSize);
 
     // 4. LOGIKA PREMIKANJA (posodobi se samo, če NI ustavljen in NI na koncu)
     if (!kvadratek.stopped && kvadratek.index < path.length - 1) {
@@ -248,4 +262,16 @@ function updateAndDraw(kvadratek) {
         }
     }
 }
+}
+
+function getScale() {
+    return Math.min(canvas.width, canvas.height) / BASE_SIZE;
+}
+
+function getOffset(scale) {
+    const drawSize = BASE_SIZE * scale;
+    return {
+        x: (canvas.width - drawSize) / 2,
+        y: (canvas.height - drawSize) / 2
+    };
 }
