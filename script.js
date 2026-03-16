@@ -6,7 +6,7 @@ window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
 
-    svgBackground.src = "img/labirint.svg"; 
+    svgBackground.src = "img/ozadje.png"; 
 
     wireButtons();
 

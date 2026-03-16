@@ -12,7 +12,7 @@ h1{
     text-align: center;
 }
 canvas{
-    background-image: url(img/jungle.webp);
+    background-image: url(img/ozadje.png);
 }
 
 #restartButton{
@@ -36,4 +36,41 @@ canvas{
     display: flex;
     gap: 8px;
     margin-top: 12px;
+}
+.maze-container {
+  position: relative;
+  width: 485px; /* Match your background image size */
+  height: 485px;
+}
+
+.bg-layer {
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 1;
+}
+
+.river-patch {
+  position: absolute;
+  /* Adjust these until it covers the 'still' river in your photo */
+  top: 104px; 
+  left: -39px; 
+  
+  width: 150px;  /* Width of the river section */
+  height: 360px;  /* Height of your sprite frame */
+  
+  background-image: url('img/spritesheetRiver.png');
+  background-repeat: repeat-x; /* Let it tile if the river is long */
+  z-index: 0; /* Sits ON TOP of the background image */
+  
+  animation: flow 0.8s steps(2) infinite;
+}
+
+#mazeCanvas {
+  position: absolute;
+  z-index: 3; /* Player and walls stay on top of everything */
+  background: transparent;
+}
+@keyframes flow {
+  from { background-position: 0; }
+  to { background-position: -300px; } /* Change this to the TOTAL height of your png */
 }
