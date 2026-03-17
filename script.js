@@ -76,11 +76,16 @@ function drawImage(){
     var img1 = new Image(); img1.src = "img/lion.png";
     var img2 = new Image(); img2.src = "img/giraffe.png";
     var img3 = new Image(); img3.src = "img/zebra.png";
-    var img4 = new Image(); img4.src = "img/antelope.png";
+    var img4 = new Image(); img4.src = "img/antelope.png"; 
+
+    var img2Stopped = new Image(); img2Stopped.src = "img/zirafaStop.svg";
+    var img3Stopped = new Image(); img3Stopped.src = "img/zebraStop.svg";
+    var img4Stopped = new Image(); img4Stopped.src = "img/antilopaStop.svg";
+
     var kvadratek1 = { index: 0, t: 0, speed: 0.105, delay: 200, img: img1, size: 20};
-    var kvadratek2 = { index: 0, t: 0, speed: 0.08, delay: 0, img: img2, size: 20, stopped: false, lastX: 0, lastY: 0};
-    var kvadratek3 = { index: 0, t: 0, speed: 0.09, delay: 0, img: img3, size: 20, stopped: false, lastX: 0, lastY: 0};
-    var kvadratek4 = { index: 0, t: 0, speed: 0.099, delay: 0, img: img4, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek2 = { index: 0, t: 0, speed: 0.08, delay: 0, img: img2, stoppedImg: img2Stopped, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek3 = { index: 0, t: 0, speed: 0.09, delay: 0, img: img3, stoppedImg: img3Stopped, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek4 = { index: 0, t: 0, speed: 0.099, delay: 0, img: img4, stoppedImg: img4Stopped, size: 20, stopped: false, lastX: 0, lastY: 0};
 
     var endImg = new Image();
     endImg.src = "img/lion.png"; // Pot do tvoje slike za konec
@@ -142,13 +147,6 @@ function animate() {
 
     const now = Date.now();
 
-    // Če moramo prikazovati končno sliko
-    if (now < showEndImageUntil) {
-        ctx.drawImage(endImg, 0, 0, canvas.width, canvas.height);
-        requestAnimationFrame(animate);
-        return;
-    }
-
     // 2. Normalno risanje
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawImage();
@@ -169,8 +167,7 @@ function animate() {
                 kvadratek2.lastX = pos2.x; // Shrani lokacijo ulova
                 kvadratek2.lastY = pos2.y;
                 kvadratek2.delay = Infinity; // nikoli več se ne aktivira
-                requestAnimationFrame(animate);
-                return;
+                // nadaljuj z risanjem ostalih
             }
         }
     
@@ -184,8 +181,6 @@ function animate() {
                 kvadratek3.delay = Infinity; // nikoli več se ne aktivira
                 kvadratek3.lastX = pos3.x;
                 kvadratek3.lastY = pos3.y;
-                requestAnimationFrame(animate);
-                return;
             }
     }
 
@@ -197,8 +192,6 @@ function animate() {
                 kvadratek4.delay = Infinity;
                 kvadratek4.lastX = pos4.x;
                 kvadratek4.lastY = pos4.y;
-                requestAnimationFrame(animate);
-                return;
             }
     }
         
@@ -209,6 +202,11 @@ function animate() {
     updateAndDraw(kvadratek2);
     updateAndDraw(kvadratek3);
     updateAndDraw(kvadratek4);
+
+    // Če moramo prikazovati končno sliko, jo riši čez vse (brez ustavljanja animacije)
+    if (now < showEndImageUntil) {
+        ctx.drawImage(endImg, 0, 0, canvas.width, canvas.height);
+    }
 
     requestAnimationFrame(animate);
 
@@ -238,7 +236,13 @@ function updateAndDraw(kvadratek) {
     const scale = getScale();
     const drawSize = kvadratek.size * scale;
     if (kvadratek.stopped) {
-        ctx.drawImage(kvadratek.img, kvadratek.lastX - drawSize / 2, kvadratek.lastY - drawSize / 2, drawSize, drawSize);
+        var stoppedImg = kvadratek.stoppedImg || kvadratek.img;
+        if (!stoppedImg || !stoppedImg.complete || stoppedImg.naturalWidth === 0) {
+            stoppedImg = kvadratek.img;
+        }
+        if (stoppedImg && stoppedImg.complete && stoppedImg.naturalWidth > 0) {
+            ctx.drawImage(stoppedImg, kvadratek.lastX - drawSize / 2, kvadratek.lastY - drawSize / 2, drawSize, drawSize);
+        }
         return;
     }
     // 1. Preverjanje zamika
@@ -251,7 +255,9 @@ function updateAndDraw(kvadratek) {
     const pos = getPos(kvadratek);
 
     // 3. Risanje slike (vedno narišemo na trenutni poziciji)
-    ctx.drawImage(kvadratek.img, pos.x - drawSize / 2, pos.y - drawSize / 2, drawSize, drawSize);
+    if (kvadratek.img && kvadratek.img.complete && kvadratek.img.naturalWidth > 0) {
+        ctx.drawImage(kvadratek.img, pos.x - drawSize / 2, pos.y - drawSize / 2, drawSize, drawSize);
+    }
 
     // 4. LOGIKA PREMIKANJA (posodobi se samo, če NI ustavljen in NI na koncu)
     if (!kvadratek.stopped && kvadratek.index < path.length - 1) {
