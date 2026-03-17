@@ -12,7 +12,7 @@ h1{
     text-align: center;
 }
 canvas{
-    background-image: url(img/ozadje1.PNG);
+    background-image: url(img/labirintResitev1.png);
 }
 
 #restartButton{
@@ -58,11 +58,11 @@ canvas{
   width: 150px;  /* Width of the river section */
   height: 360px;  /* Height of your sprite frame */
   
-  background-image: url('img/spritesheetRiver.png');
+  background-image: url('img/spritesheetWaves1.png');
   background-repeat: repeat-x; /* Let it tile if the river is long */
   z-index: 0; /* Sits ON TOP of the background image */
   
-  animation: flow 0.8s steps(2) infinite;
+  animation: flow 0.8s steps(4) infinite;
 }
 
 #mazeCanvas {
@@ -72,5 +72,5 @@ canvas{
 }
 @keyframes flow {
   from { background-position: 0; }
-  to { background-position: -300px; } /* Change this to the TOTAL height of your png */
+  to { background-position: -600px; } /* Change this to the TOTAL height of your png */
 }
