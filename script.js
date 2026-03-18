@@ -5,6 +5,7 @@ const BASE_SIZE = 485;
 window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
 
     svgBackground.src = "img/labirintResitev1.png"; 
 
@@ -73,23 +74,24 @@ function drawImage(){
         [250,482]
     ];
 
-    var img1 = new Image(); img1.src = "img/lion.png";
-    var img2 = new Image(); img2.src = "img/giraffe.png";
-    var img3 = new Image(); img3.src = "img/zebra.png";
-    var img4 = new Image(); img4.src = "img/antelope.png"; 
+    var img1 = new Image(); img1.src = "img/spritesheetLion.png";
+    var img2 = new Image(); img2.src = "img/spritesheetGiraffe.png";
+    var img3 = new Image(); img3.src = "img/spritesheetZebra.png";
+    var img4 = new Image(); img4.src = "img/spritesheetAntelope.png"; 
 
     var img2Stopped = new Image(); img2Stopped.src = "img/zirafaStop.svg";
     var img3Stopped = new Image(); img3Stopped.src = "img/zebraStop.svg";
     var img4Stopped = new Image(); img4Stopped.src = "img/antilopaStop.svg";
 
-    var kvadratek1 = { index: 0, t: 0, speed: 0.105, delay: 200, img: img1, size: 20};
-    var kvadratek2 = { index: 0, t: 0, speed: 0.08, delay: 0, img: img2, stoppedImg: img2Stopped, size: 20, stopped: false, lastX: 0, lastY: 0};
-    var kvadratek3 = { index: 0, t: 0, speed: 0.09, delay: 0, img: img3, stoppedImg: img3Stopped, size: 20, stopped: false, lastX: 0, lastY: 0};
-    var kvadratek4 = { index: 0, t: 0, speed: 0.099, delay: 0, img: img4, stoppedImg: img4Stopped, size: 20, stopped: false, lastX: 0, lastY: 0};
+    var kvadratek1 = { index: 0, t: 0, speed: 0.105, delay: 200, img: img1, size: 40, spriteFrames: 2, spriteVertical: true, frameMs: 200, flipByDirection: true, facing: 1 };
+    var kvadratek2 = { index: 0, t: 0, speed: 0.08, delay: 0, img: img2, stoppedImg: img2Stopped, size: 40, stopped: false, lastX: 0, lastY: 0, spriteFrames: 2, spriteVertical: true, frameMs: 200, flipByDirection: true, facing: 1};
+    var kvadratek3 = { index: 0, t: 0, speed: 0.09, delay: 0, img: img3, stoppedImg: img3Stopped, size: 40, stopped: false, lastX: 0, lastY: 0, spriteFrames: 2, spriteVertical: true, frameMs: 200, flipByDirection: true, facing: 1};
+    var kvadratek4 = { index: 0, t: 0, speed: 0.099, delay: 0, img: img4, stoppedImg: img4Stopped, size: 40, stopped: false, lastX: 0, lastY: 0, spriteFrames: 2, spriteVertical: true, frameMs: 200, flipByDirection: true, facing: 1};
 
     var endImg = new Image();
-    endImg.src = "img/lion.png"; // Pot do tvoje slike za konec
+    endImg.src = "img/spritesheetLion.png"; // Pot do tvoje slike za konec
     var showEndImageUntil = 0;
+    var showGifUntil = 0;
 
 function resetGame() {
     kvadratek1.index = 0;
@@ -118,6 +120,8 @@ function resetGame() {
     kvadratek4.lastY = 0;
 
     showEndImageUntil = 0;
+    showGifUntil = 0;
+    toggleCollisionGif(false);
 }
 
 function wireButtons() {
@@ -131,13 +135,23 @@ function wireButtons() {
         aboutButton.addEventListener("click", function () {
             if (window.Swal && typeof window.Swal.fire === "function") {
                 window.Swal.fire({
-                    icon: "info",
-                    title: "Author",
-                    text: "Žiga Kranjc, 4. Rb"
+                    title: "",
+                    html: "<div class=\"about-text\">Žiga Kranjc<br>4. Rb</div>",
+                    customClass: { popup: "about-popup" },
+                    background: "zadiAbout.png",
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    customClass: { popup: "about-popup", confirmButton: "about-confirm" }
                 });
             }
         });
     }
+}
+
+function toggleCollisionGif(show) {
+    var el = document.getElementById("collisionGif");
+    if (!el) return;
+    el.style.display = show ? "block" : "none";
 }
 
 function animate() {
@@ -162,7 +176,9 @@ function animate() {
     if (!kvadratek2.stopped && kvadratek1.delay === 0 && kvadratek2.delay === 0) {
         let dist = Math.sqrt((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2);
         if (dist < hitRadius) {
-            showEndImageUntil = Date.now() + 1500;            
+            showEndImageUntil = Date.now() + 1500;
+            showGifUntil = showEndImageUntil;
+            toggleCollisionGif(true);
                 kvadratek2.stopped = true;   // riba se ustavi
                 kvadratek2.lastX = pos2.x; // Shrani lokacijo ulova
                 kvadratek2.lastY = pos2.y;
@@ -176,7 +192,9 @@ function animate() {
     if (!kvadratek3.stopped && kvadratek1.delay === 0 && kvadratek3.delay === 0) {
         let dist = Math.sqrt((pos1.x - pos3.x)**2 + (pos1.y - pos3.y)**2);
         if (dist < hitRadius) {
-            showEndImageUntil = Date.now() + 1500;            
+            showEndImageUntil = Date.now() + 1500;
+            showGifUntil = showEndImageUntil;
+            toggleCollisionGif(true);
                 kvadratek3.stopped = true;   // riba se ustavi
                 kvadratek3.delay = Infinity; // nikoli več se ne aktivira
                 kvadratek3.lastX = pos3.x;
@@ -187,7 +205,8 @@ function animate() {
     if (!kvadratek4.stopped && kvadratek1.delay === 0 && kvadratek4.delay === 0) {
         let dist = Math.sqrt((pos1.x - pos4.x)**2 + (pos1.y - pos4.y)**2);
         if (dist < hitRadius) {
-            showEndImageUntil = Date.now() + 1500;            
+            showGifUntil = Date.now() + 1100;
+            toggleCollisionGif(true);
                 kvadratek4.stopped = true;   // riba se ustavi
                 kvadratek4.delay = Infinity;
                 kvadratek4.lastX = pos4.x;
@@ -204,8 +223,9 @@ function animate() {
     updateAndDraw(kvadratek4);
 
     // Če moramo prikazovati končno sliko, jo riši čez vse (brez ustavljanja animacije)
-    if (now < showEndImageUntil) {
-        ctx.drawImage(endImg, 0, 0, canvas.width, canvas.height);
+    if (showGifUntil && now > showGifUntil) {
+        toggleCollisionGif(false);
+        showGifUntil = 0;
     }
 
     requestAnimationFrame(animate);
@@ -253,10 +273,29 @@ function updateAndDraw(kvadratek) {
 
     // 2. Pridobivanje pozicije
     const pos = getPos(kvadratek);
+    if (kvadratek.flipByDirection) {
+        const dir = getSegmentDir(kvadratek);
+        if (dir.x < 0) kvadratek.facing = -1;
+        else if (dir.x > 0) kvadratek.facing = 1;
+    }
 
     // 3. Risanje slike (vedno narišemo na trenutni poziciji)
     if (kvadratek.img && kvadratek.img.complete && kvadratek.img.naturalWidth > 0) {
-        ctx.drawImage(kvadratek.img, pos.x - drawSize / 2, pos.y - drawSize / 2, drawSize, drawSize);
+        if (kvadratek.spriteFrames && kvadratek.spriteFrames > 1) {
+            drawSpriteImage(
+                kvadratek.img,
+                pos.x - drawSize / 2,
+                pos.y - drawSize / 2,
+                drawSize,
+                drawSize,
+                kvadratek.spriteFrames,
+                !!kvadratek.spriteVertical,
+                kvadratek.frameMs || 200,
+                kvadratek.facing === -1
+            );
+        } else {
+            ctx.drawImage(kvadratek.img, pos.x - drawSize / 2, pos.y - drawSize / 2, drawSize, drawSize);
+        }
     }
 
     // 4. LOGIKA PREMIKANJA (posodobi se samo, če NI ustavljen in NI na koncu)
@@ -268,6 +307,44 @@ function updateAndDraw(kvadratek) {
         }
     }
 }
+}
+
+function drawSpriteImage(img, dx, dy, dWidth, dHeight, frames, vertical, frameMs, flipX) {
+    if (!img || !img.complete || img.naturalWidth === 0) return;
+    const now = Date.now();
+    const frameIndex = Math.floor(now / frameMs) % frames;
+    if (vertical) {
+        const frameW = img.naturalWidth;
+        const frameH = img.naturalHeight / frames;
+        if (flipX) {
+            ctx.save();
+            ctx.translate(dx + dWidth, dy);
+            ctx.scale(-1, 1);
+            ctx.drawImage(img, 0, frameIndex * frameH, frameW, frameH, 0, 0, dWidth, dHeight);
+            ctx.restore();
+        } else {
+            ctx.drawImage(img, 0, frameIndex * frameH, frameW, frameH, dx, dy, dWidth, dHeight);
+        }
+    } else {
+        const frameW = img.naturalWidth / frames;
+        const frameH = img.naturalHeight;
+        if (flipX) {
+            ctx.save();
+            ctx.translate(dx + dWidth, dy);
+            ctx.scale(-1, 1);
+            ctx.drawImage(img, frameIndex * frameW, 0, frameW, frameH, 0, 0, dWidth, dHeight);
+            ctx.restore();
+        } else {
+            ctx.drawImage(img, frameIndex * frameW, 0, frameW, frameH, dx, dy, dWidth, dHeight);
+        }
+    }
+}
+
+function getSegmentDir(obj) {
+    if (obj.index >= path.length - 1) return { x: 0, y: 0 };
+    const [x1, y1] = path[obj.index];
+    const [x2, y2] = path[obj.index + 1];
+    return { x: x2 - x1, y: y2 - y1 };
 }
 
 function getScale() {

@@ -2,61 +2,143 @@
     margin: 0;
     padding: auto;
 }
+body{
+    background: url("img/ozadje1.jpg") no-repeat;
+    background-size: cover;
+}
+:root {
+    --maze-size: 550px;
+    --maze-scale: 1.1340; /* 550 / 485 */
+}
 .labirint{
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-h1{
+.title-left,
+.title-right{
+    position: fixed;
+    top: 40%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: "Griffy", "Times New Roman", serif;
+    background-image: url("img/naslov.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    color: rgb(5, 81, 30);
     text-align: center;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.6);
+    width: 520px;
+    height: 240px;
+    font-size:25px;
+    font-weight: bold;
+}
+.title-left{
+    left: -10px;
+}
+.title-right{
+    right: -10px;
+}
+.h1-top{
+    display: block;
+    font-size:25px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    margin-bottom: 6px;
 }
 canvas{
     background-image: url(img/labirintResitev1.png);
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    border-radius: 12px;
 }
 
 #restartButton{
     margin-top: 12px;
-    padding: 8px 16px;
-    font-size: 16px;
+    padding: 18px 36px;
+    font-size: 22px;
+    font-family: "Griffy", "Times New Roman", serif;
+    background-image: url("img/zadi1.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #f4e6c8;
     cursor: pointer;
+    background-color: transparent;
+    border: none;
+    appearance: none;
+    min-width: 180px;
+    min-height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1;
 }
 #aboutButton{
     margin-top: 12px;
-    padding: 8px 16px;
-    font-size: 16px;
+    padding: 18px 36px;
+    font-size: 22px;
+    font-family: "Griffy", "Times New Roman", serif;
+    background-image: url("img/zadi1.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #f4e6c8;
     cursor: pointer;
+    background-color: transparent;
+    border: none;
+    appearance: none;
+    min-width: 180px;
+    min-height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1;
 }
 .maze-wrapper{
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    position: relative;
+    margin-top:50px;
 }
 .controls{
     display: flex;
-    gap: 8px;
-    margin-top: 12px;
+    gap: 12px;
+    margin-bottom: 12px;
+    order: -1;
+    justify-content: center;
+    width: 100%;
 }
 .maze-container {
   position: relative;
-  width: 485px; /* Match your background image size */
-  height: 485px;
+  width: var(--maze-size);
+  height: var(--maze-size);
+  overflow: hidden;
+  border-radius: 12px;
+  border: 4px solid #6b4a2b;
+  box-sizing: border-box;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 4px rgba(255, 228, 170, 0.15);
 }
-
-.bg-layer {
-  position: absolute;
-  top: 0; left: 0;
-  z-index: 1;
-}
-
 .river-patch {
   position: absolute;
   /* Adjust these until it covers the 'still' river in your photo */
-  top: 104px; 
-  left: -39px; 
+  top: calc(110px * var(--maze-scale)); 
+  left: calc(-25px * var(--maze-scale)); 
   
-  width: 150px;  /* Width of the river section */
-  height: 360px;  /* Height of your sprite frame */
+  width: calc(150px );  /* Width of the river section */
+  height: calc(360px * var(--maze-scale));  /* Height of your sprite frame */
   
   background-image: url('img/spritesheetWaves1.png');
   background-repeat: repeat-x; /* Let it tile if the river is long */
@@ -73,4 +155,39 @@ canvas{
 @keyframes flow {
   from { background-position: 0; }
   to { background-position: -600px; } /* Change this to the TOTAL height of your png */
+}
+
+.about-popup{
+    background: url("img/zadiAbout.png") no-repeat center/contain;
+    width: 420px;
+    height: 260px;
+    padding: 0 !important;
+    border-radius: 0;
+}
+.about-text{
+    font-family: "Griffy", "Times New Roman", serif;
+    color: #2f6b3f;
+    text-align: center;
+    font-size: 24px;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.6);
+    margin-top: 70px;
+}
+.about-confirm {
+    font-family: "Griffy", "Times New Roman", serif;
+    background-color: #2f6b3f !important;   
+    color: #f4e6c8 !important;
+    border: none !important;
+}
+
+#collisionGif{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70vw;
+    max-width: 700px;
+    display: none;
+    z-index: 10;
+    pointer-events: none;
 }

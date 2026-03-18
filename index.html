@@ -2,14 +2,23 @@
 <head>
     <title></title>
     <link rel = "stylesheet" href = "style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Griffy&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>LABIRINT</h1>
-
+    <h1 class="title-left"><span class="h1-top">THE</span>JUNGLE MAZE</h1>
+    <h1 class="title-right"><span class="h1-top">THE</span>JUNGLE MAZE</h1>
+    <div id="collisionGif" aria-hidden="true">
+        <div class="tenor-gif-embed" data-postid="22419970" data-share-method="host" data-aspect-ratio="2.37037" data-width="100%">
+            <a href="https://tenor.com/view/lion-king-leon-aslan-lion-gif-22419970">Lion King Leon GIF</a>from
+            <a href="https://tenor.com/search/lion+king-gifs">Lion King GIFs</a>
+        </div>
+    </div>
     <div class="labirint">
         <div class="maze-wrapper">
             <div class="maze-container">
-                <canvas id="canvas" width="485" height="485"></canvas>
+                <canvas id="canvas" width="550" height="550"></canvas>
                 <div class="river-patch"></div>
             </div>                  
             <div class="controls">
@@ -20,5 +29,6 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="script.js"></script>
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
 </body>
 </html>
