@@ -60,27 +60,29 @@ canvas{
     border-radius: 12px;
 }
 
-#restartButton{
+#startButton{
     margin-top: 12px;
     padding: 18px 36px;
     font-size: 22px;
     font-family: "Griffy", "Times New Roman", serif;
     background-image: url("img/zadi1.png");
-    background-size: 100% 100%;
+    background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
-    color: #f4e6c8;
+    color: white;
+    text-shadow: 2px 2px 5px green;
     cursor: pointer;
     background-color: transparent;
     border: none;
     appearance: none;
-    min-width: 180px;
-    min-height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    line-height: 1;
+}
+#startButton:hover{
+    background-size: 130%;
+    box-shadow: 5px 5px 10px white;
 }
 #aboutButton{
     margin-top: 12px;
@@ -88,21 +90,23 @@ canvas{
     font-size: 22px;
     font-family: "Griffy", "Times New Roman", serif;
     background-image: url("img/zadi1.png");
-    background-size: 100% 100%;
+    background-size: 70%;
     background-position: center;
     background-repeat: no-repeat;
-    color: #f4e6c8;
+    color: white;
+    text-shadow: 2px 2px 5px green;
     cursor: pointer;
     background-color: transparent;
     border: none;
     appearance: none;
-    min-width: 180px;
-    min-height: 64px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    line-height: 1;
+}
+#aboutButton:hover{
+    background-size: 130%;
+    box-shadow: 5px 5px 10px white;
 }
 .maze-wrapper{
     display: flex;

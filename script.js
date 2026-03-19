@@ -1,42 +1,32 @@
 
 var svgBackground = new Image ();
 const BASE_SIZE = 485;
+var music = null;
+var endAlertShown = false;
+var musicBtn = null;
+var isRunning = false;
+var roarSound = null;
+    
+
 
 window.onload = function () {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
-
     svgBackground.src = "img/labirintResitev1.png"; 
+    music = document.getElementById("backgroundMusic");
+    roarSound = document.getElementById("roar");
+    musicBtn = document.getElementById("playMusicBtn");
 
     wireButtons();
-
-    animate (); 
-
 }
 
 function drawImage(){
     ctx.strokeStyle = "white";
-    const scale = getScale();
-    const offset = getOffset(scale);
+    var scale = getScale();
+    var offset = getOffset(scale);
     ctx.drawImage(svgBackground, offset.x, offset.y, BASE_SIZE * scale, BASE_SIZE * scale);
 }
-  /*  var x = 234;
-    var y = 2;
-
-    var dx = 0;
-    var dy = 0;
-    function drawIt() {
-        var canvas = document.getElementById('canvas');
-        var c = canvas.getContext('2d');
-        c.clearRect(0,0,canvas.width,canvas.height);//pobriše vse
-        drawImage(); // nazaj narise labirint
-        c.fillStyle = "red";    
-        c.fillRect(x,y,10,10); 
-        x+=dx;
-        y+=dy; 
-    }
-    setInterval(drawIt, 100);*/
 
     const path = [
         [234,2],[234,10],[154,10],[154,26],[138,26],[138,42],[154,42],
@@ -121,14 +111,44 @@ function resetGame() {
 
     showEndImageUntil = 0;
     showGifUntil = 0;
+    endAlertShown = false;
     toggleCollisionGif(false);
 }
 
 function wireButtons() {
-    var restartButton = document.getElementById("restartButton");
-    if (restartButton) {
-        restartButton.addEventListener("click", resetGame);
-    }
+    var startButton = document.getElementById("startButton");
+if (startButton) {
+    startButton.addEventListener("click", function () {
+        resetGame();
+        if(!isRunning){
+            isRunning = true;
+            animate();
+        }
+
+        if (roarSound) {
+            roarSound.play().then(function () {
+                roarSound.pause();
+                roarSound.currentTime = 0;
+            }).catch(function () {});
+        }
+        
+        if (music) {
+            music.play().then(function () {
+                if (musicBtn) musicBtn.style.display = "none";
+            }).catch(function (e) {
+                console.log(e);
+            });
+        }
+
+        if (roarSound) {
+            roarSound.play().then(function () {
+                roarSound.pause();
+                roarSound.currentTime = 0;
+            }).catch(function () {});
+        }
+    });
+}
+
 
     var aboutButton = document.getElementById("aboutButton");
     if (aboutButton) {
@@ -152,6 +172,14 @@ function toggleCollisionGif(show) {
     var el = document.getElementById("collisionGif");
     if (!el) return;
     el.style.display = show ? "block" : "none";
+
+    if (show && roarSound) {
+        roarSound.currentTime = 0;
+        roarSound.play().catch(function () {});
+    } else if (!show && roarSound) {
+        roarSound.pause();
+        roarSound.currentTime = 0;
+    }
 }
 
 function animate() {
@@ -159,18 +187,18 @@ function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawImage();
 
-    const now = Date.now();
+    var now = Date.now();
 
     // 2. Normalno risanje
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawImage();
 
-    const pos1 = getPos(kvadratek1);
-    const pos2 = getPos(kvadratek2);
-    const pos3 = getPos(kvadratek3);
-    const pos4 = getPos(kvadratek4);
-    const scale = getScale();
-    const hitRadius = 10 * scale;
+    var pos1 = getPos(kvadratek1);
+    var pos2 = getPos(kvadratek2);
+    var pos3 = getPos(kvadratek3);
+    var pos4 = getPos(kvadratek4);
+    var scale = getScale();
+    var hitRadius = 10 * scale;
 
     // 3. Preverjanje trka za kvadratek 2
     if (!kvadratek2.stopped && kvadratek1.delay === 0 && kvadratek2.delay === 0) {
@@ -222,6 +250,33 @@ function animate() {
     updateAndDraw(kvadratek3);
     updateAndDraw(kvadratek4);
 
+    if (!endAlertShown && kvadratek1.index >= path.length - 1) {
+        endAlertShown = true;
+        if (music && !music.paused) {
+            music.pause();
+            music.currentTime = 0;
+        }
+
+        if (window.Swal && typeof window.Swal.fire === "function") {
+            setTimeout(function (){
+                window.Swal.fire({
+                    html: "<div class=\"about-text\">The lion<br>has won</div>",
+                    customClass: { popup: "about-popup" },
+                    background: "zadiAbout.png",
+                    showConfirmButton: true,
+                    confirmButtonText: "OK",
+                    customClass: { popup: "about-popup", confirmButton: "about-confirm" }
+                });
+            }, 1000);   
+        }        
+    }
+
+    if (kvadratek1.index >= path.length - 1) {
+        if (music && !music.paused) {
+            music.pause();
+            music.currentTime = 0;
+        }
+    }
     // Če moramo prikazovati končno sliko, jo riši čez vse (brez ustavljanja animacije)
     if (showGifUntil && now > showGifUntil) {
         toggleCollisionGif(false);
