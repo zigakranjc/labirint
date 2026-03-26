@@ -55,6 +55,8 @@ body{
 }
 canvas{
     background-image: url(img/labirintResitev1.png);
+    background-position: center;
+    background-size: cover;
     image-rendering: crisp-edges;
     image-rendering: pixelated;
     border-radius: 12px;
